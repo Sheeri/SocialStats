@@ -5,6 +5,7 @@
 let url = window.location.hostname;
 const REALM_APP_ID = url.split(".")[0];
 
+
 // Get the URL for the Charts dashboard based on the 
 // Realm App Id
 const CHARTS_URL = getChartsUrl(REALM_APP_ID);
