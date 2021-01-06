@@ -19,5 +19,5 @@ function getChartsUrl(REALM_APP_ID) {
       case "socialstats-dev-lauren-ncrqz":
          return "https://charts.mongodb.com/charts-socialstats-dev-lauren-fmxwm/public/dashboards/2e3a452e-a77d-4849-bdc0-90b361026b05";
    }
-   throw new Error("Unable to find Charts URL for this app.");
+   throw new Error("Unable to find Charts URL for Realm app id",REALM_APP_ID);
 }

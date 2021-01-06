@@ -1,84 +1,39 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 </head>
 
 <body>
   <!-- TODO: Make this page pretty -->
-  <h1>DevRel Tweet Statistics</h1>
+  <h1>DevRel Repo Statistics</h1>
 
-  <p><a id="dashboard-link" href="">View Dashboard</a></p>
-
-  <p>Upload your Tweet statistics CSV: </p>
-
-  <!-- TODO: Disable this button during uploads -->
-  <input type="file" id="csvUpload" />
-
+  <input type="submit" value='click me' id="takeAction" />
   <p id="results"></p>
 
 
 </body>
 
 <script src="https://unpkg.com/realm-web@0.8.0/dist/bundle.iife.js"></script>
-<script src="./config.js"></script>
+<!-- <script src="./config.js"></script>-->
 <script>
-
+    const REALM_APP_ID='drgh-hfxea';
   const app = new Realm.App({ id: REALM_APP_ID });
 
-  document.getElementById("dashboard-link").href = CHARTS_URL;
-
-  function convertToBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        resolve(reader.result);
-      }
-      reader.onerror = (error) => {
-        reject(error);
-      }
-
-      reader.readAsDataURL(file);
-    });
-  }
-
-  // TODO: only allow csv uploads
-
-  document.getElementById('csvUpload').addEventListener('change', async event => {
-    console.log("Processing file...");
-    document.getElementById('results').innerText = 'Processing file...'
+  document.getElementById('takeAction').addEventListener('click', async event => {
+    document.getElementById('results').innerText = 'Processing...'
 
     try {
 
-      // TODO: Disallow or handle multiple files
-      // TODO: Handle errors
-      const files = event.target.files;
-      const file = await convertToBase64(files[0]);
-      const myParam = [file];
-
       // TODO: use Google auth
       await app.logIn(Realm.Credentials.anonymous());
+      const result = await app.functions.requestUserRepos('mongodb-developer');
 
-      const result = await app.functions.processCsv(file);
+      // TODO: loop through each repo
+      // "name" is the repo name - "stargazers_count" is the # of stars
+      // call getClones
       console.log(result);
 
-      let resultsToPrint = "";
-      if (result.tweetsNotInsertedOrUpdated.length > 0) {
-        resultsToPrint += `${result.tweetsNotInsertedOrUpdated.length} Tweet(s) were not inserted or updated.\n`;
-      }
-      if (result.newTweets.length > 0 || result.updatedTweets.length > 0) {
-        resultsToPrint += "Fabulous! ";
-        if (result.newTweets.length > 0) {
-          resultsToPrint += `${result.newTweets.length} new Tweet(s) was/were saved. `;
-        }
-        if (result.updatedTweets.length > 0) {
-          resultsToPrint += `${result.updatedTweets.length} Tweet(s) was/were updated.`;
-        }
-      }
-
-      document.getElementById('results').innerText = resultsToPrint;
     } catch (error) {
       console.error(error);
       document.getElementById('results').innerText = "An error occurred while trying to process your file. Please try again.";
